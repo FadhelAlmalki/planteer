@@ -1,21 +1,128 @@
 from django.http import HttpRequest
-from django.shortcuts import render
+from django.db.models import Q
+from django.shortcuts import get_object_or_404, redirect, render
+
+from .models import Plant
 
 def all_plant_view(request: HttpRequest):
-    pass
+    plants = Plant.objects.all().order_by('-created_at')
+
+    selected_category = request.GET.get('category', '').strip()
+    selected_is_edible = request.GET.get('is_edible', '').strip().lower()
+
+    valid_categories = [choice[0] for choice in Plant.CategoryChoices.choices]
+    if selected_category in valid_categories:
+        plants = plants.filter(category=selected_category)
+
+    if selected_is_edible == 'true':
+        plants = plants.filter(is_edible=True)
+    elif selected_is_edible == 'false':
+        plants = plants.filter(is_edible=False)
+
+    context = {
+        'plants': plants,
+        'categories': Plant.CategoryChoices.choices,
+        'selected_category': selected_category,
+        'selected_is_edible': selected_is_edible,
+    }
+    return render(request, 'plants/all_plants.html', context)
 
 def plant_detail_view(request: HttpRequest, plant_id: int):
-    pass
+    plant = get_object_or_404(Plant, id=plant_id)
+    related_plants = (
+        Plant.objects
+        .filter(category=plant.category)
+        .exclude(id=plant.id)
+        .order_by('-created_at')[:3]
+    )
+
+    context = {
+        'plant': plant,
+        'related_plants': related_plants,
+    }
+    return render(request, 'plants/plant_detail.html', context)
 
 def add_plant_view(request: HttpRequest):
-    pass
+
+    if request.method == 'POST':
+        is_edible = request.POST.get('is_edible', '').strip().lower() == 'true'
+        new_plant = Plant(name = request.POST.get('name'),
+                          category = request.POST.get('category'),
+                          about = request.POST.get('about'),
+                          is_edible = is_edible,
+                          used_for = request.POST.get('used_for'),
+                          image = request.FILES.get('image'),
+                        )
+        new_plant.save()
+        return redirect("main:home_view")
+
+    return render(request, 'plants/add_plant.html')
 
 def update_plant_view(request: HttpRequest, plant_id: int):
-    pass
+    plant = get_object_or_404(Plant, id=plant_id)
+
+    if request.method == 'POST':
+        plant.name = request.POST.get('name', '').strip()
+        plant.about = request.POST.get('about', '').strip()
+        plant.used_for = request.POST.get('used_for', '').strip()
+        plant.is_edible = request.POST.get('is_edible', '').strip().lower() == 'true'
+
+        category = request.POST.get('category', '').strip()
+        valid_categories = [choice[0] for choice in Plant.CategoryChoices.choices]
+        if category in valid_categories:
+            plant.category = category
+
+        image = request.FILES.get('image')
+        if image:
+            plant.image = image
+
+        plant.save()
+        return redirect('plants:plant_detail_view', plant_id=plant.id)
+
+    context = {
+        'plant': plant,
+        'categories': Plant.CategoryChoices.choices,
+    }
+    return render(request, 'plants/update_plant.html', context)
 
 def delete_plant_view(request: HttpRequest, plant_id: int):
-    pass
+    plant = get_object_or_404(Plant, id=plant_id)
+
+    if request.method == 'POST':
+        plant.delete()
+        return redirect('plants:all_plant_view')
+
+    return redirect('plants:plant_detail_view', plant_id=plant.id)
 
 def search_plant_view(request: HttpRequest):
-    pass
+    search_query = request.GET.get('q', '').strip()
+    selected_category = request.GET.get('category', '').strip()
+    selected_is_edible = request.GET.get('is_edible', '').strip().lower()
+
+    plants = Plant.objects.all().order_by('-created_at')
+
+    if search_query:
+        plants = plants.filter(
+            Q(name__icontains=search_query)
+            | Q(about__icontains=search_query)
+            | Q(used_for__icontains=search_query)
+        )
+
+    valid_categories = [choice[0] for choice in Plant.CategoryChoices.choices]
+    if selected_category in valid_categories:
+        plants = plants.filter(category=selected_category)
+
+    if selected_is_edible == 'true':
+        plants = plants.filter(is_edible=True)
+    elif selected_is_edible == 'false':
+        plants = plants.filter(is_edible=False)
+
+    context = {
+        'plants': plants,
+        'categories': Plant.CategoryChoices.choices,
+        'search_query': search_query,
+        'selected_category': selected_category,
+        'selected_is_edible': selected_is_edible,
+    }
+    return render(request, 'plants/search_plant.html', context)
 
