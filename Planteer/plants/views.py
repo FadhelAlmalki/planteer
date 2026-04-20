@@ -2,7 +2,7 @@ from django.http import HttpRequest
 from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect, render
 
-from .models import Plant
+from .models import Plant, Comment
 
 def all_plant_view(request: HttpRequest):
     plants = Plant.objects.all().order_by('-created_at')
@@ -28,7 +28,11 @@ def all_plant_view(request: HttpRequest):
     return render(request, 'plants/all_plants.html', context)
 
 def plant_detail_view(request: HttpRequest, plant_id: int):
+
     plant = get_object_or_404(Plant, id=plant_id)
+
+    comments = Comment.objects.filter(plant=plant)
+
     related_plants = (
         Plant.objects
         .filter(category=plant.category)
@@ -38,6 +42,7 @@ def plant_detail_view(request: HttpRequest, plant_id: int):
 
     context = {
         'plant': plant,
+        'comments': comments,
         'related_plants': related_plants,
     }
     return render(request, 'plants/plant_detail.html', context)
@@ -126,3 +131,11 @@ def search_plant_view(request: HttpRequest):
     }
     return render(request, 'plants/search_plant.html', context)
 
+def add_comment_view(request: HttpRequest, plant_id: int):
+
+    if request.method == "POST":
+        plant_object = Plant.objects.get(pk=plant_id)
+        new_comment = Comment(plant=plant_object, author=request.POST["author"], text=request.POST["text"])
+        new_comment.save()
+
+    return redirect("plants:plant_detail_view", plant_id=plant_id)
