@@ -21,7 +21,7 @@ It includes:
 ### 1. Clone the repository
 
 ```bash
-git clone <https://github.com/FadhelAlmalki/Planteer.git>
+git clone <https://github.com/FadhelAlmalki/planteer.git>
 cd Planteer
 ```
 
