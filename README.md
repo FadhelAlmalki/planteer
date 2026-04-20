@@ -1,11 +1,15 @@
-## Planteer
+# Planteer
 
-Planteer is a Django web application for managing plants and handling visitor contact messages.
-It includes:
+Planteer is a Django web application for managing plants and collecting visitor contact messages.
 
-- A home page with the latest added plants
-- Plant CRUD operations (create, read, update, delete)
-- Plant search and filtering by category and edible status
+## Features
+
+- Home page with latest plants
+- Plant CRUD (add, view, update, delete)
+- Plant search by keyword
+- Plant filtering by category and edible status
+- Plant detail page with related plants
+- Comment system per plant
 - Contact form and contact message listing
 - Image upload support for plants
 
@@ -15,14 +19,15 @@ It includes:
 - Django 6.0.4
 - SQLite (default database)
 - Pillow (image handling)
+- Bootstrap 5 (CDN)
 
 ## Installation and Setup
 
 ### 1. Clone the repository
 
 ```bash
-git clone <https://github.com/FadhelAlmalki/planteer.git>
-cd Planteer
+git clone https://github.com/FadhelAlmalki/planteer.git
+cd planteer
 ```
 
 ### 2. Create and activate a virtual environment
@@ -54,7 +59,7 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### 4. Go to the Django project directory
+### 4. Move to Django project directory
 
 ```bash
 cd Planteer
@@ -72,30 +77,37 @@ python manage.py migrate
 python manage.py runserver
 ```
 
-Open in browser:
+Open in browser: http://127.0.0.1:8000/
 
-http://127.0.0.1:8000/
+### Optional: create admin user
 
-## Main Routes
+```bash
+python manage.py createsuperuser
+```
+
+Admin URL: http://127.0.0.1:8000/admin/
+
+## Routes
 
 ### Core
 
-- `/` -> Home page
-- `/admin/` -> Django admin
+- `/` - Home page
+- `/admin/` - Django admin
 
 ### Main app
 
-- `/contact/` -> Contact form
-- `/contact/messages/` -> Contact messages list
+- `/contact/` - Contact form
+- `/contact/messages/` - Contact messages list
 
 ### Plants app
 
-- `/plants/all/` -> List all plants
-- `/plants/new/` -> Add a new plant
-- `/plants/search/` -> Search plants
-- `/plants/<plant_id>/detail/` -> Plant details
-- `/plants/<plant_id>/update/` -> Update plant
-- `/plants/<plant_id>/delete/` -> Delete plant
+- `/plants/all/` - List all plants
+- `/plants/new/` - Add a new plant
+- `/plants/search/` - Search plants
+- `/plants/<plant_id>/detail/` - Plant details
+- `/plants/<plant_id>/update/` - Update plant
+- `/plants/<plant_id>/delete/` - Delete plant
+- `/plants/comments/add/<plant_id>/` - Add comment to plant
 
 ## Data Models
 
@@ -109,6 +121,13 @@ http://127.0.0.1:8000/
 - `is_edible` (BooleanField)
 - `created_at` (DateTimeField)
 
+### Comment
+
+- `plant` (ForeignKey -> Plant)
+- `author` (CharField)
+- `text` (TextField)
+- `created_at` (DateTimeField)
+
 ### Contact
 
 - `first_name` (CharField)
@@ -117,13 +136,9 @@ http://127.0.0.1:8000/
 - `message` (TextField)
 - `created_at` (DateTimeField)
 
-## Static and Media Files
+## Static and Media
 
 - Static URL: `static/`
 - Media URL: `media/`
-- Media root is configured in settings and served in development.
-
-Plant images are stored under:
-
-- `Planteer/media/images/`
-
+- Media files are served in development mode via project URL configuration.
+- Uploaded plant images are stored under `Planteer/media/images/`.
