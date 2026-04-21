@@ -7,7 +7,7 @@ Planteer is a Django web application for managing plants and collecting visitor 
 - Home page with latest plants
 - Plant CRUD (add, view, update, delete)
 - Plant search by keyword
-- Plant filtering by category and edible status
+- Plant filtering by category, country, and edible status
 - Plant detail page with related plants
 - Comment system per plant
 - Contact form and contact message listing
@@ -120,6 +120,12 @@ Admin URL: http://127.0.0.1:8000/admin/
 - `category` (choices: `flower`, `tree`, `herb`)
 - `is_edible` (BooleanField)
 - `created_at` (DateTimeField)
+- `countries` (ManyToManyField -> Country)
+
+### Country
+
+- `name` (CharField)
+- `flag` (ImageField, uploaded to `flags/`)
 
 ### Comment
 
@@ -142,3 +148,4 @@ Admin URL: http://127.0.0.1:8000/admin/
 - Media URL: `media/`
 - Media files are served in development mode via project URL configuration.
 - Uploaded plant images are stored under `Planteer/media/images/`.
+- Uploaded flag images are stored under `Planteer/media/flags/`.
