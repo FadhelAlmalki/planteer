@@ -2,27 +2,37 @@ from django.http import HttpRequest
 from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect, render
 
-from .models import Plant, Comment
+from .models import Plant, Comment, Country
 
 def all_plant_view(request: HttpRequest):
     plants = Plant.objects.all().order_by('-created_at')
+    countries = Country.objects.all().order_by('name')
 
     selected_category = request.GET.get('category', '').strip()
+    selected_country = request.GET.get('country', '').strip()
     selected_is_edible = request.GET.get('is_edible', '').strip().lower()
 
     valid_categories = [choice[0] for choice in Plant.CategoryChoices.choices]
     if selected_category in valid_categories:
         plants = plants.filter(category=selected_category)
 
+    valid_country_ids = {str(country.id) for country in countries}
+    if selected_country in valid_country_ids:
+        plants = plants.filter(countries__id=selected_country)
+
     if selected_is_edible == 'true':
         plants = plants.filter(is_edible=True)
     elif selected_is_edible == 'false':
         plants = plants.filter(is_edible=False)
 
+    plants = plants.distinct()
+
     context = {
         'plants': plants,
         'categories': Plant.CategoryChoices.choices,
+        'countries': countries,
         'selected_category': selected_category,
+        'selected_country': selected_country,
         'selected_is_edible': selected_is_edible,
     }
     return render(request, 'plants/all_plants.html', context)
@@ -49,6 +59,8 @@ def plant_detail_view(request: HttpRequest, plant_id: int):
 
 def add_plant_view(request: HttpRequest):
 
+    countries = Country.objects.all()
+
     if request.method == 'POST':
         is_edible = request.POST.get('is_edible', '').strip().lower() == 'true'
         new_plant = Plant(name = request.POST.get('name'),
@@ -59,12 +71,14 @@ def add_plant_view(request: HttpRequest):
                           image = request.FILES.get('image'),
                         )
         new_plant.save()
+        new_plant.countries.set(request.POST.getlist('countries'))
         return redirect("main:home_view")
 
-    return render(request, 'plants/add_plant.html')
+    return render(request, 'plants/add_plant.html', {'countries': countries})
 
 def update_plant_view(request: HttpRequest, plant_id: int):
     plant = get_object_or_404(Plant, id=plant_id)
+    countries = Country.objects.all()
 
     if request.method == 'POST':
         plant.name = request.POST.get('name', '').strip()
@@ -82,11 +96,13 @@ def update_plant_view(request: HttpRequest, plant_id: int):
             plant.image = image
 
         plant.save()
+        plant.countries.set(request.POST.getlist('countries'))
         return redirect('plants:plant_detail_view', plant_id=plant.id)
 
     context = {
         'plant': plant,
         'categories': Plant.CategoryChoices.choices,
+        'countries': countries,
     }
     return render(request, 'plants/update_plant.html', context)
 

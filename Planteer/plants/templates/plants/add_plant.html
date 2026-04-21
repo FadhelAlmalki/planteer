@@ -29,6 +29,16 @@
                     </div>
 
 					<div class="mb-3">
+						<label class="form-label">Countries of Origin</label>
+						<div class="d-flex align-items-center gap-2">
+							{% for country in countries %}
+								<input type="checkbox" class="form-check-input" name="countries" value="{{country.id}}" id="check-{{country.id}}"/>
+								<label for="check-{{country.id}}"> {{country.name}}</label>
+							{% endfor %}
+						</div>
+					</div>
+
+					<div class="mb-3">
 						<label for="about" class="form-label">About Plant</label>
 						<textarea class="form-control" id="about" name="about" rows="6" required></textarea>
 					</div>

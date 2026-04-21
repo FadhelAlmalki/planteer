@@ -24,7 +24,7 @@
 
             <p class="mb-3">{{ plant.about }}</p>
 
-            <p class="mb-2">
+            <p class="mb-3">
                 <span class="fw-semibold">Is Edible:</span>
                 {% if plant.is_edible %}
                 <span class="badge text-bg-success">Yes</span>
@@ -34,6 +34,19 @@
             </p>
 
             <p class="mb-3"><span class="fw-semibold">Used For:</span><br>{{ plant.used_for }}</p>
+            <div class="d-flex gap-2 mb-3 align-items-center flex-wrap">
+                <span class="fw-semibold">Countries of Origin:</span>
+                {% for country in plant.countries.all %}
+                <span class="badge text-bg-light border text-dark d-flex align-items-center gap-2">
+                    {% if country.flag %}
+                    <img src="{{ country.flag.url }}" alt="{{ country.name }}" style="height: 20px; width: auto; object-fit: contain;">
+                    {% endif %}
+                    {{ country.name }}
+                </span>
+                {% empty %}
+                <span class="text-muted">No countries of origin specified.</span>
+                {% endfor %}
+            </div>
 
             <div class="d-flex flex-wrap gap-2">
                 <a href="{% url 'plants:update_plant_view' plant.id %}" class="btn btn-outline-dark">Update</a>
