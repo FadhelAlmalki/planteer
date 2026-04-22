@@ -108,6 +108,7 @@ Admin URL: http://127.0.0.1:8000/admin/
 - `/plants/<plant_id>/update/` - Update plant
 - `/plants/<plant_id>/delete/` - Delete plant
 - `/plants/comments/add/<plant_id>/` - Add comment to plant
+- `/plants/country/<country_id>/` - Plants by country
 
 ## Data Models
 
