@@ -1,8 +1,11 @@
 from django.http import HttpRequest
 from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect, render
+from better_profanity import profanity
 
 from .models import Plant, Comment, Country
+
+profanity.load_censor_words()
 
 def all_plant_view(request: HttpRequest):
     plants = Plant.objects.all().order_by('-created_at')
@@ -161,7 +164,9 @@ def add_comment_view(request: HttpRequest, plant_id: int):
 
     if request.method == "POST":
         plant_object = Plant.objects.get(pk=plant_id)
-        new_comment = Comment(plant=plant_object, author=request.POST["author"], text=request.POST["text"])
+        author = profanity.censor(request.POST.get("author", "").strip())
+        text = profanity.censor(request.POST.get("text", "").strip())
+        new_comment = Comment(plant=plant_object, author=author, text=text)
         new_comment.save()
 
     return redirect("plants:plant_detail_view", plant_id=plant_id)
