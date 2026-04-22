@@ -155,3 +155,13 @@ def add_comment_view(request: HttpRequest, plant_id: int):
         new_comment.save()
 
     return redirect("plants:plant_detail_view", plant_id=plant_id)
+
+def plants_by_country_view(request: HttpRequest, country_id: int):
+    country = get_object_or_404(Country, id=country_id)
+    plants = Plant.objects.filter(countries__id=country_id).order_by('-created_at')
+
+    context = {
+        'country': country,
+        'plants': plants,
+    }
+    return render(request, 'plants/plants_by_country.html', context)

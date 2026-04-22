@@ -37,12 +37,12 @@
             <div class="d-flex gap-2 mb-3 align-items-center flex-wrap">
                 <span class="fw-semibold">Countries of Origin:</span>
                 {% for country in plant.countries.all %}
-                <span class="badge text-bg-light border text-dark d-flex align-items-center gap-2">
+                <a href="{% url 'plants:plants_by_country_view' country.id %}" class="badge text-bg-light border text-dark d-flex align-items-center gap-2 text-decoration-none country-origin-link">
                     {% if country.flag %}
                     <img src="{{ country.flag.url }}" alt="{{ country.name }}" style="height: 20px; width: auto; object-fit: contain;">
                     {% endif %}
                     {{ country.name }}
-                </span>
+                </a>
                 {% empty %}
                 <span class="text-muted">No countries of origin specified.</span>
                 {% endfor %}
