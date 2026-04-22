@@ -116,8 +116,12 @@ def delete_plant_view(request: HttpRequest, plant_id: int):
     return redirect('plants:plant_detail_view', plant_id=plant.id)
 
 def search_plant_view(request: HttpRequest):
+
+    countries = Country.objects.all().order_by('name')
+
     search_query = request.GET.get('q', '').strip()
     selected_category = request.GET.get('category', '').strip()
+    selected_country = request.GET.get('country', '').strip()
     selected_is_edible = request.GET.get('is_edible', '').strip().lower()
 
     plants = Plant.objects.all().order_by('-created_at')
@@ -133,6 +137,10 @@ def search_plant_view(request: HttpRequest):
     if selected_category in valid_categories:
         plants = plants.filter(category=selected_category)
 
+    valid_country_ids = {str(country.id) for country in countries}
+    if selected_country in valid_country_ids:
+        plants = plants.filter(countries__id=selected_country)
+
     if selected_is_edible == 'true':
         plants = plants.filter(is_edible=True)
     elif selected_is_edible == 'false':
@@ -144,6 +152,8 @@ def search_plant_view(request: HttpRequest):
         'search_query': search_query,
         'selected_category': selected_category,
         'selected_is_edible': selected_is_edible,
+        'selected_country': selected_country,
+        'countries': countries,
     }
     return render(request, 'plants/search_plant.html', context)
 

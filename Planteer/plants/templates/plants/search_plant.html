@@ -13,7 +13,7 @@
 	<div class="card border-0 shadow-sm mb-4">
 		<div class="card-body">
 			<form method="get" action="{% url 'plants:search_plant_view' %}" class="row g-3 align-items-end">
-				<div class="col-12 col-lg-7">
+				<div class="col-12 col-lg-4">
 					<label for="q" class="form-label">Search</label>
 					<input
 						type="text"
@@ -34,7 +34,17 @@
 						{% endfor %}
 					</select>
 				</div>
-
+				
+				<div class="col-12 col-md-6 col-lg-2">
+					<label for="country" class="form-label">Country</label>
+					<select id="country" name="country" class="form-select">
+						<option value="" {% if not selected_country %}selected{% endif %}>All countries</option>
+						{% for country in countries %}
+						<option value="{{ country.id }}" {% if selected_country == country.id|stringformat:"s" %}selected{% endif %}>{{country.name }}</option>
+						{% endfor %}
+					</select>
+				</div>
+				
 				<div class="col-12 col-md-6 col-lg-2">
 					<label for="is_edible" class="form-label">Edible</label>
 					<select id="is_edible" name="is_edible" class="form-select">
@@ -44,8 +54,9 @@
 					</select>
 				</div>
 
-				<div class="col-12 col-lg-1 d-grid">
+				<div class="col-12 col-lg-1 d-flex gap-2">
 					<button type="submit" class="btn btn-dark">Search</button>
+					<a href="{% url 'plants:search_plant_view' %}" class="btn btn-outline-secondary">Reset</a>
 				</div>
 			</form>
 		</div>
