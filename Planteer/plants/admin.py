@@ -8,7 +8,7 @@ class PlantAdmin(admin.ModelAdmin):
 
 
 class CommentAdmin(admin.ModelAdmin):
-    list_display = ('author', 'plant', 'text', 'created_at')
+    list_display = ('user', 'plant', 'text', 'created_at')
     list_filter = ('plant', 'created_at')
 
 class CountryAdmin(admin.ModelAdmin):

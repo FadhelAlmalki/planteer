@@ -48,6 +48,7 @@
                 {% endfor %}
             </div>
 
+            {% if request.user.is_staff %}
             <div class="d-flex flex-wrap gap-2">
                 <a href="{% url 'plants:update_plant_view' plant.id %}" class="btn btn-outline-dark">Update</a>
                 <form method="post" action="{% url 'plants:delete_plant_view' plant.id %}" class="d-inline" onsubmit="return confirm('Delete this plant?');">
@@ -55,6 +56,7 @@
                     <button type="submit" class="btn btn-danger">Delete</button>
                 </form>
             </div>
+            {% endif %}
         </div>
     </div>
 
@@ -64,7 +66,7 @@
     <div class="d-flex flex-column gap-3">
         {% for comment in comments %}
             <div class="d-flex flex-column p-3 shadow">
-                <h4>{{ comment.author }}</h4>
+                <h4>{{ comment.user.first_name }} {{ comment.user.last_name }}</h4>
                 <p>{{ comment.text }}</p>
                 <p class="text-muted">{{comment.created_at}}</p>
             </div>
@@ -77,13 +79,20 @@
         {% endfor %}
     </div>
 
+    {% if user.is_authenticated %}
     <h3 class="mt-5">Add Comment</h3>
     <form class="d-flex flex-column gap-2" action="{% url 'plants:add_comment_view' plant.id %}" method="post">
         {% csrf_token %}
-        <input type="text" name="author" class="form-control" placeholder="Your name" required>
         <textarea name="text" class="form-control" rows="3" placeholder="Your comment" required></textarea>
         <input type="submit" class="btn btn-primary" value="Add Comment">
     </form>
+    {% else %}
+    <div class="card border-0 shadow-sm mt-4">
+        <div class="card-body text-center py-4">
+            <p class="text-muted mb-0">Please <a href="{% url 'accounts:sign_in' %}">Sign In</a> to add a comment.</p>
+        </div>
+    </div>
+    {% endif %}
 
     <div class="mt-5">
         <div class="d-flex justify-content-between align-items-center mb-3">

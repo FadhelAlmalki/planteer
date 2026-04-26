@@ -2,6 +2,7 @@ from django.http import HttpRequest
 from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect, render
 from better_profanity import profanity
+from django.contrib import messages
 
 from .models import Plant, Comment, Country
 
@@ -64,6 +65,10 @@ def add_plant_view(request: HttpRequest):
 
     countries = Country.objects.all()
 
+    if not request.user.is_staff:
+        messages.warning(request, "You do not have permission to add a plant.", extra_tags='alert-warning')
+        return redirect("main:home_view")
+
     if request.method == 'POST':
         is_edible = request.POST.get('is_edible', '').strip().lower() == 'true'
         new_plant = Plant(name = request.POST.get('name'),
@@ -82,6 +87,10 @@ def add_plant_view(request: HttpRequest):
 def update_plant_view(request: HttpRequest, plant_id: int):
     plant = get_object_or_404(Plant, id=plant_id)
     countries = Country.objects.all()
+
+    if not request.user.is_staff:
+        messages.warning(request, "You do not have permission to update this plant.", extra_tags='alert-warning')
+        return redirect("main:home_view")
 
     if request.method == 'POST':
         plant.name = request.POST.get('name', '').strip()
@@ -111,6 +120,10 @@ def update_plant_view(request: HttpRequest, plant_id: int):
 
 def delete_plant_view(request: HttpRequest, plant_id: int):
     plant = get_object_or_404(Plant, id=plant_id)
+
+    if not request.user.is_staff:
+        messages.warning(request, "You do not have permission to delete this plant.", extra_tags='alert-warning')
+        return redirect("main:home_view")
 
     if request.method == 'POST':
         plant.delete()
@@ -162,12 +175,18 @@ def search_plant_view(request: HttpRequest):
 
 def add_comment_view(request: HttpRequest, plant_id: int):
 
+    if not request.user.is_authenticated:
+        messages.error(request, "You must be logged in to add a comment.", extra_tags='alert-danger')
+        return redirect("accounts:sign_in")
+    
     if request.method == "POST":
         plant_object = Plant.objects.get(pk=plant_id)
-        author = profanity.censor(request.POST.get("author", "").strip())
+        user = request.user
         text = profanity.censor(request.POST.get("text", "").strip())
-        new_comment = Comment(plant=plant_object, author=author, text=text)
+        new_comment = Comment(plant=plant_object, user=user, text=text)
         new_comment.save()
+
+        messages.success(request, "Your comment has been added successfully!", extra_tags='alert-success')
 
     return redirect("plants:plant_detail_view", plant_id=plant_id)
 

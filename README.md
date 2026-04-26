@@ -5,21 +5,25 @@ Planteer is a Django web application for managing plants and collecting visitor 
 ## Features
 
 - Home page with latest plants
-- Plant CRUD (add, view, update, delete)
-- Plant search by keyword
-- Plant filtering by category, country, and edible status
+- Account system (sign up, sign in, logout)
+- Plant listing with filtering by category, country, and edible status
+- Plant search by keyword (name, about, used_for)
 - Plant detail page with related plants
-- Comment system per plant
+- Plant CRUD (staff-only for add, update, delete)
+- Comment system per plant (authenticated users only)
+- Automatic profanity filtering for comment text
 - Contact form and contact message listing
-- Image upload support for plants
+- Image upload support for plants and country flags
+- Bootstrap alert messages for user feedback
 
 ## Tech Stack
 
 - Python 3
-- Django 6.0.4
+- Django 6.0.3
 - SQLite (default database)
-- Pillow (image handling)
-- Bootstrap 5 (CDN)
+- Pillow 12.2.0 (image handling)
+- better-profanity 0.7.0
+- Bootstrap 5.3.3 (CDN)
 
 ## Installation and Setup
 
@@ -102,13 +106,19 @@ Admin URL: http://127.0.0.1:8000/admin/
 ### Plants app
 
 - `/plants/all/` - List all plants
-- `/plants/new/` - Add a new plant
+- `/plants/new/` - Add a new plant (staff only)
 - `/plants/search/` - Search plants
 - `/plants/<plant_id>/detail/` - Plant details
-- `/plants/<plant_id>/update/` - Update plant
-- `/plants/<plant_id>/delete/` - Delete plant
+- `/plants/<plant_id>/update/` - Update plant (staff only)
+- `/plants/<plant_id>/delete/` - Delete plant (staff only)
 - `/plants/comments/add/<plant_id>/` - Add comment to plant
 - `/plants/country/<country_id>/` - Plants by country
+
+### Accounts app
+
+- `/accounts/signup/` - Create account
+- `/accounts/signin/` - Sign in
+- `/accounts/logout/` - Log out
 
 ## Data Models
 
@@ -131,7 +141,7 @@ Admin URL: http://127.0.0.1:8000/admin/
 ### Comment
 
 - `plant` (ForeignKey -> Plant)
-- `author` (CharField)
+- `user` (ForeignKey -> Django User)
 - `text` (TextField)
 - `created_at` (DateTimeField)
 
