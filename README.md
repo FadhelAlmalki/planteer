@@ -6,6 +6,7 @@ Planteer is a Django web application for managing plants and collecting visitor 
 
 - Home page with latest plants
 - Account system (sign up, sign in, logout)
+- User profile page with avatar, bio, X link, and user comment history
 - Plant listing with filtering by category, country, and edible status
 - Plant search by keyword (name, about, used_for)
 - Plant detail page with related plants
@@ -119,6 +120,7 @@ Admin URL: http://127.0.0.1:8000/admin/
 - `/accounts/signup/` - Create account
 - `/accounts/signin/` - Sign in
 - `/accounts/logout/` - Log out
+- `/accounts/profile/<user_name>/` - Public user profile page
 
 ## Data Models
 
@@ -144,6 +146,13 @@ Admin URL: http://127.0.0.1:8000/admin/
 - `user` (ForeignKey -> Django User)
 - `text` (TextField)
 - `created_at` (DateTimeField)
+
+### Profile
+
+- `user` (OneToOneField -> Django User)
+- `about` (TextField, optional)
+- `avatar` (ImageField, uploaded to `images/avatars/`)
+- `x_link` (URLField, optional)
 
 ### Contact
 
