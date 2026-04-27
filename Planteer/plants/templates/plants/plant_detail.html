@@ -66,7 +66,7 @@
     <div class="d-flex flex-column gap-3">
         {% for comment in comments %}
             <div class="d-flex flex-column p-3 shadow">
-                <h4>{{ comment.user.first_name }} {{ comment.user.last_name }}</h4>
+                <a href="{% url 'accounts:user_profile_view' comment.user.username %}" class="text-dark text-decoration-none fw-semibold"><h4>{{ comment.user.first_name }} {{ comment.user.last_name }}</h4></a>
                 <p>{{ comment.text }}</p>
                 <p class="text-muted">{{comment.created_at}}</p>
             </div>
