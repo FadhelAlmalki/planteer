@@ -12,6 +12,7 @@ Planteer is a Django web application for managing plants and collecting visitor 
 - Plant detail page with related plants
 - Plant CRUD (staff-only for add, update, delete)
 - Comment system per plant (authenticated users only)
+- Comment deletion for comment authors and permitted users
 - Automatic profanity filtering for comment text
 - Contact form and contact message listing
 - Image upload support for plants and country flags
@@ -113,6 +114,7 @@ Admin URL: http://127.0.0.1:8000/admin/
 - `/plants/<plant_id>/update/` - Update plant (staff only)
 - `/plants/<plant_id>/delete/` - Delete plant (staff only)
 - `/plants/comments/add/<plant_id>/` - Add comment to plant
+- `/plants/comments/<comment_id>/delete/` - Delete a comment
 - `/plants/country/<country_id>/` - Plants by country
 
 ### Accounts app
