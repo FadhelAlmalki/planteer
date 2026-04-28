@@ -14,7 +14,7 @@
                     <a class="nav-link" href="{% url 'main:contact_view' %}">Contact Us</a>
                 </li>
 
-                {% if request.user.is_staff %}
+                {% if request.user.is_staff and perms.plants.add_plant %}
                 <li class="nav-item">
                     <a class="btn btn-dark btn-sm px-3 py-2" href="{% url 'plants:add_plant_view' %}">Add Plant</a>
                 </li>

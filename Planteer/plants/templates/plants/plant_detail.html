@@ -48,7 +48,7 @@
                 {% endfor %}
             </div>
 
-            {% if request.user.is_staff %}
+            {% if request.user.is_staff and perms.plants.change_plant %}
             <div class="d-flex flex-wrap gap-2">
                 <a href="{% url 'plants:update_plant_view' plant.id %}" class="btn btn-outline-dark">Update</a>
                 <form method="post" action="{% url 'plants:delete_plant_view' plant.id %}" class="d-inline" onsubmit="return confirm('Delete this plant?');">

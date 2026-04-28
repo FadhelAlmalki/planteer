@@ -65,7 +65,7 @@ def add_plant_view(request: HttpRequest):
 
     countries = Country.objects.all()
 
-    if not request.user.is_staff:
+    if not (request.user.is_staff and request.user.has_perm("plants.add_plant")):
         messages.warning(request, "You do not have permission to add a plant.", extra_tags='alert-warning')
         return redirect("main:home_view")
 
@@ -88,7 +88,7 @@ def update_plant_view(request: HttpRequest, plant_id: int):
     plant = get_object_or_404(Plant, id=plant_id)
     countries = Country.objects.all()
 
-    if not request.user.is_staff:
+    if not (request.user.is_staff and request.user.has_perm("plants.change_plant")):
         messages.warning(request, "You do not have permission to update this plant.", extra_tags='alert-warning')
         return redirect("main:home_view")
 
@@ -121,7 +121,7 @@ def update_plant_view(request: HttpRequest, plant_id: int):
 def delete_plant_view(request: HttpRequest, plant_id: int):
     plant = get_object_or_404(Plant, id=plant_id)
 
-    if not request.user.is_staff:
+    if not (request.user.is_staff and request.user.has_perm("plants.delete_plant")):
         messages.warning(request, "You do not have permission to delete this plant.", extra_tags='alert-warning')
         return redirect("main:home_view")
 
