@@ -190,6 +190,25 @@ def add_comment_view(request: HttpRequest, plant_id: int):
 
     return redirect("plants:plant_detail_view", plant_id=plant_id)
 
+def delete_comment_view(request: HttpRequest, comment_id: int):
+    comment = get_object_or_404(Comment, id=comment_id)
+
+    if not request.user.is_authenticated:
+        messages.error(request, "You must be logged in to delete a comment.", extra_tags='alert-danger')
+        return redirect('accounts:sign_in')
+
+    if not (request.user == comment.user or request.user.has_perm("plants.delete_comment")):
+        messages.warning(request, "You do not have permission to delete this comment.", extra_tags='alert-warning')
+        return redirect('plants:plant_detail_view', plant_id=comment.plant.id)
+
+    if request.method == 'POST':
+        plant_id = comment.plant.id
+        comment.delete()
+        messages.success(request, "Comment deleted successfully.", extra_tags='alert-success')
+        return redirect('plants:plant_detail_view', plant_id=plant_id)
+
+    return redirect('plants:plant_detail_view', plant_id=comment.plant.id)
+
 def plants_by_country_view(request: HttpRequest, country_id: int):
     country = get_object_or_404(Country, id=country_id)
     plants = Plant.objects.filter(countries__id=country_id).order_by('-created_at')

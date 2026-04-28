@@ -65,11 +65,21 @@
 
     <div class="d-flex flex-column gap-3">
         {% for comment in comments %}
-            <div class="d-flex flex-column p-3 shadow">
+            <div class="position-relative d-flex flex-column p-3 shadow pe-5">
+                {% if user.is_authenticated %}
+                {% if user == comment.user or perms.plants.delete_comment %}
+                <form method="post" action="{% url 'plants:delete_comment_view' comment.id %}" class="position-absolute top-0 end-0 mt-2 me-2" onsubmit="return confirm('Delete this comment?');">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                </form>
+                {% endif %}
+                {% endif %}
                 <a href="{% url 'accounts:user_profile_view' comment.user.username %}" class="text-dark text-decoration-none fw-semibold"><h4>{{ comment.user.first_name }} {{ comment.user.last_name }}</h4></a>
                 <p>{{ comment.text }}</p>
-                <p class="text-muted">{{comment.created_at}}</p>
+                <p class="text-muted mb-0">{{comment.created_at}}</p>
+                
             </div>
+            
         {% empty %}
             <div class="card border-0 shadow-sm">
                 <div class="card-body text-center py-4">
